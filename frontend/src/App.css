@@ -1,0 +1,14 @@
+.custom-aspect-ratio {
+    aspect-ratio: 16 / 9 !important;
+  }
+  .bg-img-login{
+    background-image: url('/bookimgs/booklogin.jpeg');
+    background-size: contain; 
+    background-position: right ;
+    background-repeat: no-repeat;
+     }
+    input,select,textarea{
+      background-color: white;
+      color: gray;
+    }
+    
