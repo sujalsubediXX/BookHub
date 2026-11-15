@@ -1,274 +1,38 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
+import { FiBookOpen, FiSearch, FiX } from "react-icons/fi";
+
 function Books() {
   const [books, setBooks] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [displayBooks, setDisplayBooks] = useState([]);
+  const [genres, setGenres] = useState([]);
+  const [query, setQuery] = useState("");
+  const [genreId, setGenreId] = useState("");
+  const [sort, setSort] = useState("title");
   const [selectedBook, setSelectedBook] = useState(null);
-  const [selectedGenre, setSelectedGenre] = useState(""); // Track selected genre
-  const [searchTerm, setSearchTerm] = useState(""); // Search term
-  const booksPerPage = 8;
-  const [genre, setGenre] = useState([]);
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchBooks = async () => {
-      try {
-        const res = await axios.get("http://localhost:3000/books");
-        setBooks(res.data);
-      } catch (error) {
-        console.error(`Fetch books error: ${error.message}`);
-      }
-    };
-    fetchBooks();
-  }, []);
+    const params = new URLSearchParams(location.search);
+    setGenreId(params.get("genreid") || "");
+    axios.get("http://localhost:3000/books").then((response) => setBooks(response.data)).catch(() => setBooks([]));
+    axios.get("http://localhost:3000/genre").then((response) => setGenres(response.data)).catch(() => setGenres([]));
+  }, [location.search]);
 
-  useEffect(() => {
-    const getGenre = async () => {
-      try {
-        const res = await axios.get("http://localhost:3000/genre");
-        setGenre(res.data);
-      } catch (error) {
-        console.error(`Fetch genres error: ${error.message}`);
-      }
-    };
-    getGenre();
-  }, []);
+  const filteredBooks = useMemo(() => books.filter((book) => {
+    const text = `${book.title} ${book.author} ${book.isbn}`.toLowerCase();
+    return text.includes(query.toLowerCase()) && (!genreId || book.genre?.some((genre) => genre._id === genreId));
+  }).sort((a, b) => (a[sort] || "").localeCompare(b[sort] || "")), [books, genreId, query, sort]);
 
-  // Get genreId from URL params if present
-  const searchParams = new URLSearchParams(location.search);
-  const genreIdFromUrl = searchParams.get("genreid");
+  const updateGenre = (value) => { setGenreId(value); navigate(value ? `/books?genreid=${value}` : "/books"); };
+  const coverUrl = (image) => image?.startsWith("http") ? image : `http://localhost:3000${image?.replace(".", "") || ""}`;
 
-  useEffect(() => {
-    const filteredBooks = books.filter((book) => {
-      const matchesSearchTerm = book.title
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
-      const matchesGenre =
-        !selectedGenre && !genreIdFromUrl
-          ? true
-          : selectedGenre
-          ? book.genre.some((g) => g._id === selectedGenre)
-          : genreIdFromUrl
-          ? book.genre.some((g) => g._id === genreIdFromUrl)
-          : false;
-      return matchesSearchTerm && matchesGenre;
-    });
-
-    setDisplayBooks(filteredBooks);
-    setCurrentPage(1); // Reset to the first page whenever filtering is applied
-  }, [books, selectedGenre, searchTerm, genreIdFromUrl]);
-
-  // Handle sorting books
-  const handleSort = (sortBy) => {
-    const sorted = [...displayBooks].sort((a, b) => {
-      const aValue = a[sortBy]?.toLowerCase();
-      const bValue = b[sortBy]?.toLowerCase();
-      if (aValue < bValue) return -1;
-      if (aValue > bValue) return 1;
-      return 0;
-    });
-    setDisplayBooks(sorted);
-    setCurrentPage(1);
-  };
-
-  // Handle sort change
-  const handleSortChange = (event) => {
-    handleSort(event.target.value);
-  };
-
-  // Handle genre change (update state and URL)
-  const handleGenreChange = (event) => {
-    const selected = event.target.value;
-    setSelectedGenre(selected);
-    // Update URL with the selected genre
-    if (selected) {
-      navigate(`?genreid=${selected}`);
-    } else {
-      navigate("/books");
-    }
-  };
-
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const indexOfLastBook = currentPage * booksPerPage;
-  const indexOfFirstBook = indexOfLastBook - booksPerPage;
-  const currentBooks = displayBooks.slice(indexOfFirstBook, indexOfLastBook);
-
-  const totalPages = Math.ceil(displayBooks.length / booksPerPage);
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
-  const openModal = (book) => {
-    setSelectedBook(book);
-  };
-
-  const closeModal = () => {
-    setSelectedBook(null);
-  };
-
-  return (
-    <>
-      <div className="pt-6 mx-auto bg-gray-100">
-        <div className="text-center mb-[30px]">
-          <label htmlFor="genre-filter" className="mr-[10px]">
-            Genre:
-          </label>
-          <select
-            id="genre-filter"
-            className="p-[10px] text-[16px] mr-5 rounded-lg"
-            onChange={handleGenreChange}
-            value={selectedGenre || genreIdFromUrl || ""}
-          >
-            <option value="">ALL</option>
-            {/* <option value=""><Link 
-            to="/">ALL</Link></option> */}
-            {genre.map((setgenre) => (
-              <option key={setgenre._id} value={setgenre._id}>
-                {setgenre.name}
-              </option>
-            ))}
-          </select>
-          <label htmlFor="sort-by" className="mr-[10px]">
-            Sort By:
-          </label>
-          <select
-            id="sort-by"
-            className="p-[10px] text-[16px] mr-5 rounded-lg"
-            onChange={handleSortChange}
-            defaultValue="none"
-          >
-            <option value="none">None</option>
-            <option value="title">Title</option>
-            <option value="author">Author</option>
-          </select>
-          <label htmlFor="search" className="mr-[10px]">
-            Search:
-          </label>
-          <input
-            id="search"
-            type="text"
-            className="p-[10px] text-[16px] rounded-lg"
-            placeholder="Search books..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
-        </div>
-        <div className="flex flex-wrap gap-[14px] justify-center">
-          {currentBooks.length > 0 ? (
-            currentBooks.map((book) => (
-              <div
-                key={book._id}
-                className="flex bg-[#fff] border border-solid border-[#ddd] rounded-xl p-4 w-[336px] h-[180px] text-center cursor-pointer shadow-md transform hover:scale-105"
-                onClick={() => openModal(book)}
-              >
-                <img
-                  src={book.image}
-                  alt={book.title}
-                  className="w-[44%] h-[148px] rounded-[10px] mb-0"
-                />
-                <div className="text-left py-0 pl-[14px]">
-                  <h2 className="boldtitle text-[13px] text-black mb-[6px] font-bold">
-                    {book.title}
-                  </h2>
-                  <p className="text-[12px] text-[rgb(81,80,80)] mb-[3px]">
-                    <span className="boldtitle font-bold">Author: </span>
-                    {book.author}
-                  </p>
-                  <p className="text-[12px] text-[rgb(81,80,80)] mb-[3px]">
-                    <span className="boldtitle font-bold">Genre: </span>
-                    {book.genre.map((g) => g.name).join(", ")}
-                  </p>
-                  <p className="text-[12px] text-[rgb(81,80,80)] mb-[3px]">
-                    <span className="boldtitle font-bold">ISBN: </span>
-                    {book.isbn}
-                  </p>
-                  <button
-                    className="btn py-[6px] px-3 text-[16px] mt-1 border-2 border-solid border-black bg-[#ea00ff] text-[#fff] rounded-[5px] cursor-pointer hover:bg-[#b300aa] hover:border-black"
-                    onClick={() => openModal(book)}
-                  >
-                    Show More
-                  </button>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p className="text-4xl text-red-500  flex justify-center items-center h-[16.9vh]"><span>No Books Found.</span></p>
-          )}
-        </div>
-        <div className="flex justify-center mt-5 pb-5">
-          {Array.from({ length: totalPages }, (_, index) => (
-            <button
-              key={index + 1}
-              onClick={() => handlePageChange(index + 1)}
-              className={`my-0 mx-[5px] py-[10px] px-4 border border-solid border-[#ccc] ${
-                currentPage === index + 1
-                  ? "bg-[#007bff] text-white"
-                  : "bg-[#f9f9f9] text-black"
-              } cursor-pointer hover:bg-[#ddd]`}
-            >
-              {index + 1}
-            </button>
-          ))}
-        </div>
-      </div>
-      {selectedBook && (
-        <>
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-40"
-            onClick={closeModal}
-          ></div>
-          <dialog
-            open
-            className="modal modal-bottom sm:modal-middle z-50 overflow-hidden"
-          >
-            <div className="modal-box p-0 w-full h-[50%] sm:max-w-[50rem] flex overflow-hidden">
-              <div className="h-full w-1/2">
-                <img
-                  src={selectedBook.image}
-                  alt={selectedBook.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="p-4 w-1/2">
-                <h2 className="text-xl font-bold mb-2">
-                  {selectedBook.title}
-                </h2>
-                <p className="mb-1">
-                  <strong>Author:</strong> {selectedBook.author}
-                </p>
-                <p className="mb-1">
-                  <strong>ISBN:</strong> {selectedBook.isbn}
-                </p>
-                <p className="mb-1">
-                  <strong>Genre:</strong>{" "}
-                  {selectedBook.genre.map((g) => g.name).join(", ")}
-                </p>
-                <p className="mb-1">
-                  <strong>Publish Date:</strong>{new Date(selectedBook.publishedDate).toISOString().split("T")[0]}
-                </p>
-                <p>
-                  <strong>Details:</strong> {selectedBook.description}
-                </p>
-              </div>
-              <button
-                className="btn btn-error btn-sm absolute right-2 top-2"
-                onClick={closeModal}
-              >
-                ✕
-              </button>
-            </div>
-          </dialog>
-        </>
-      )}
-    </>
-  );
+  return <main className="public-shell"><div className="page-frame">
+    <div className="flex flex-wrap items-end justify-between gap-6"><div><p className="eyebrow">The open shelves</p><h1 className="display-font mt-3 text-5xl">Catalog</h1><p className="mt-3 max-w-xl text-[#647068]">Search the collection, filter by genre, and open a title for its full record.</p></div><div className="mono-font text-xs text-[#8b938d]">{filteredBooks.length.toString().padStart(2, "0")} TITLES FOUND</div></div>
+    <div className="mt-12 grid gap-3 border-y border-[#d9d3c7] py-4 md:grid-cols-[1fr_180px_160px]"><label className="relative"><FiSearch className="absolute left-3 top-3 text-[#b36124]" /><input value={query} onChange={(event) => setQuery(event.target.value)} className="w-full border border-[#cfc8ba] bg-[#fbf9f4] py-2.5 pl-10 pr-3 outline-none focus:border-[#b36124]" placeholder="Search title, author, or ISBN" /></label><select value={genreId} onChange={(event) => updateGenre(event.target.value)} className="border border-[#cfc8ba] bg-[#fbf9f4] px-3 py-2.5 outline-none"><option value="">All genres</option>{genres.map((genre) => <option key={genre._id} value={genre._id}>{genre.name}</option>)}</select><select value={sort} onChange={(event) => setSort(event.target.value)} className="border border-[#cfc8ba] bg-[#fbf9f4] px-3 py-2.5 outline-none"><option value="title">Sort: title</option><option value="author">Sort: author</option></select></div>
+    {filteredBooks.length ? <div className="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">{filteredBooks.map((book) => <article key={book._id} className="group cursor-pointer" onClick={() => setSelectedBook(book)}><div className="book-cover aspect-[3/4] border border-[#d9d3c7] p-2 transition-transform group-hover:-translate-y-1"><img src={coverUrl(book.image)} alt={book.title} /></div><div className="pt-4"><p className="mono-font text-[10px] uppercase tracking-wider text-[#b36124]">{book.genre?.[0]?.name || "Collection"}</p><h2 className="mt-1 text-lg font-semibold leading-tight">{book.title}</h2><p className="mt-1 text-sm text-[#647068]">{book.author}</p><p className="mt-3 text-xs text-[#8b938d]">{book.availableCopies > 0 ? `${book.availableCopies} available` : "Currently unavailable"}</p></div></article>)}</div> : <div className="soft-panel flex min-h-64 flex-col items-center justify-center p-8 text-center"><FiBookOpen size={30} className="text-[#b36124]" /><h2 className="display-font mt-4 text-2xl">No titles match that search.</h2><button className="quiet-action mt-4" onClick={() => { setQuery(""); updateGenre(""); }}>Clear filters</button></div>}
+  </div>{selectedBook && <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#20302a]/70 p-4" onClick={() => setSelectedBook(null)}><div className="grid max-h-[90vh] w-full max-w-3xl overflow-auto bg-[#fbf9f4] md:grid-cols-2" onClick={(event) => event.stopPropagation()}><div className="book-cover min-h-80"><img src={coverUrl(selectedBook.image)} alt={selectedBook.title} /></div><div className="relative p-8"><button className="absolute right-4 top-4 border-0 bg-transparent text-xl text-[#647068]" onClick={() => setSelectedBook(null)} aria-label="Close"><FiX /></button><p className="eyebrow">Book record</p><h2 className="display-font mt-4 text-4xl">{selectedBook.title}</h2><p className="mt-2 text-[#647068]">by {selectedBook.author}</p><div className="my-7 border-y border-[#d9d3c7] py-5 text-sm leading-7 text-[#45554d]"><p><strong>ISBN</strong> {selectedBook.isbn}</p><p><strong>Genre</strong> {selectedBook.genre?.map((genre) => genre.name).join(", ")}</p><p><strong>Availability</strong> {selectedBook.availableCopies} of {selectedBook.totalCopies} copies</p></div><p className="leading-7 text-[#647068]">{selectedBook.description}</p></div></div></div>}</main>;
 }
 
 export default Books;

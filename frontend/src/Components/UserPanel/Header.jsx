@@ -1,15 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
-import BtnLogin from "./BtnLogin.jsx";
-import Myprofile from "./Myprofile.jsx";
 import logo2 from "/logo2.jpeg";
+import { FiChevronDown, FiMenu, FiX } from "react-icons/fi";
 
 function Header() {
   const [genre, setGenre] = useState([]);
-  const [isActive, setIsActive] = useState(false);
   const categoryRef = useRef(null);
-  const toggleRef = useRef(null);
+  const [genreOpen, setGenreOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
   const storedUser = localStorage.getItem("Users");
 
@@ -29,21 +28,12 @@ function Header() {
     if (
       categoryRef.current &&
       !categoryRef.current.contains(event.target) &&
-      toggleRef.current &&
-      !toggleRef.current.contains(event.target)
+      !categoryRef.current.contains(event.target)
     ) {
-      setIsActive(false);
+      setGenreOpen(false);
     }
   };
-
-  const handleToggle = () => {
-    setIsActive((prev) => !prev);
-  };
-
-  const handleGenreClick = (genreId) => {
-    navigate(`/books?genreid=${genreId}`);
-    setIsActive(false);
-  };
+  const navClass = ({ isActive }) => isActive ? "active" : "";
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
@@ -53,90 +43,22 @@ function Header() {
   }, []);
 
   return (
-    <>
-      <header className="py-2 px-4 sm:px-6 lg:px-8 h-[10vh] w-full flex justify-between items-center bg-white shadow text-gray-600 relative">
-        <Link to="/dashboard/index" className="flex items-center">
-          <img src={logo2} alt="BookHub Logo" className="h-12 w-auto" />
-        </Link>
-
-        <nav className="flex items-center space-x-4 sm:space-x-6">
-          <NavLink
-            to="/"
-            className={({ isActive }) =>
-              `no-underline text-lg font-medium transition-colors duration-200 ${
-                isActive ? "text-orange-500 border-b-2 border-orange-500" : "hover:text-orange-500"
-              }`
-            }
-          >
-            Home
-          </NavLink>
-          <button
-            id="h-category"
-            ref={toggleRef}
-            onClick={handleToggle}
-            className="text-lg font-medium flex items-center gap-1 hover:text-orange-500 transition-colors duration-200"
-            aria-expanded={isActive}
-            aria-controls="genre-dropdown"
-          >
-            Genre
-            <svg
-              className={`w-4 h-4 transform transition-transform ${isActive ? "rotate-180" : ""}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-          <NavLink
-            to="/about"
-            className={({ isActive }) =>
-              `no-underline text-lg font-medium transition-colors duration-200 ${
-                isActive ? "text-orange-500 border-b-2 border-orange-500" : "hover:text-orange-500"
-              }`
-            }
-          >
-            About Us
-          </NavLink>
-          <NavLink
-            to="/books"
-            className={({ isActive }) =>
-              `no-underline text-lg font-medium transition-colors duration-200 ${
-                isActive ? "text-orange-500 border-b-2 border-orange-500" : "hover:text-orange-500"
-              }`
-            }
-          >
-            Books
-          </NavLink>
-          {storedUser ? <Myprofile /> : <BtnLogin />}
+    <header className="site-header">
+      <div className="site-header-inner">
+        <Link to="/" className="brand-mark"><img src={logo2} alt="BookHub" /><span><span className="brand-kicker">Community library</span><br />BookHub</span></Link>
+        <button className="quiet-action md:hidden" onClick={() => setMobileOpen((open) => !open)} aria-label="Toggle navigation">{mobileOpen ? <FiX /> : <FiMenu />}</button>
+        <nav className={`site-nav ${mobileOpen ? "flex" : "hidden md:flex"}`}>
+          <NavLink to="/" className={navClass}>Home</NavLink>
+          <div className="relative" ref={categoryRef}>
+            <button className="flex items-center gap-1 border-0 bg-transparent cursor-pointer" onClick={() => setGenreOpen((open) => !open)} aria-expanded={genreOpen}>Browse by genre <FiChevronDown className={genreOpen ? "rotate-180" : ""} /></button>
+            {genreOpen && <div className="absolute top-8 left-0 z-40 w-56 border border-[#ded7ca] bg-[#fbf9f4] p-2 shadow-lg">{genre.map((item) => <button key={item._id} onClick={() => { navigate(`/books?genreid=${item._id}`); setGenreOpen(false); }} className="block w-full cursor-pointer border-0 bg-transparent px-3 py-2 text-left text-sm text-[#45554d] hover:bg-[#eee8dc] hover:text-[#b36124]">{item.name}</button>)}</div>}
+          </div>
+          <NavLink to="/books" className={navClass}>Catalog</NavLink>
+          <NavLink to="/about" className={({ isActive }) => `${navClass({ isActive })} optional-nav`}>About</NavLink>
+          {storedUser ? <NavLink to="/profile" className={({ isActive }) => `${navClass({ isActive })} primary-action`}>My account</NavLink> : <Link to="/login" className="primary-action">Sign in</Link>}
         </nav>
-
-        <div
-          id="genre-dropdown"
-          className={`absolute top-full right-4 mt-2 w-64 sm:w-80 md:w-96 bg-white border border-gray-200 rounded-lg shadow-lg transition-opacity duration-300 ${
-            isActive ? "opacity-100 visible" : "opacity-0 invisible"
-          }`}
-          ref={categoryRef}
-        >
-          <ul className="grid grid-cols-2 sm:grid-cols-3 gap-1 p-2 list-none">
-            {genre.map((genredata, index) => (
-              <li
-                key={index}
-                className="text-sm p-2 hover:bg-gray-100 hover:rounded-md transition-colors duration-200"
-              >
-                <button
-                  onClick={() => handleGenreClick(genredata._id)}
-                  className="w-full text-left text-gray-700 hover:text-orange-500"
-                >
-                  {genredata.name}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </header>
-      <hr className="border-gray-200" />
-    </>
+      </div>
+    </header>
   );
 }
 

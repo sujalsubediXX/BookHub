@@ -1,220 +1,27 @@
-import React from "react";
-import { Link, Outlet, NavLink, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-const Dashboard = () => {
+import { FiBookOpen, FiChevronLeft, FiGrid, FiLogOut, FiMenu, FiTag, FiUsers, FiRepeat, FiAlertCircle, FiSettings } from "react-icons/fi";
+
+const items = [
+  ["/dashboard/index", "Overview", FiGrid],
+  ["/dashboard/managebook", "Catalog", FiBookOpen],
+  ["/dashboard/issuebook", "Issue a book", FiRepeat],
+  ["/dashboard/returnbook", "Returns", FiRepeat],
+  ["/dashboard/users", "Members", FiUsers],
+  ["/dashboard/managecategories", "Genres", FiTag],
+  ["/dashboard/penaltymanagement", "Penalties", FiAlertCircle],
+];
+
+function Dashboard() {
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
   const navigate = useNavigate();
-  const handleLogout = () => {
-    toast.success("You have logged out successfully.");
-    setTimeout(() => {
-      navigate("/");
-    }, 1000);
-    // try {
-    //   setAuthUser({
-    //     ...authUser,
-    //     user: null
-    //   });
-    //   localStorage.removeItem("Users");
-    //   toast.success("You have logged out successfully.");
-    //   setTimeout(() => {
-    //     window.location.href="http://localhost:5173/";
-    //   }, 1000);
-    // } catch (error) {
-    //   toast.error(`Error: ${error.message}`);
-    // }
-  };
-  function toggleSidebar() {
-    const sidebar = document.getElementById("sidebar");
-    if (sidebar) {
-      sidebar.classList.toggle("w-64");
-      sidebar.classList.toggle("w-20");
-    }
-  }
-  const breadcrumbMap = {
-    '/': 'Home',
-    '/dashboard/index': 'Home',
-    '/dashboard/users': 'Users',
-    '/dashboard/issuebook': 'IssueBooks',
-    '/dashboard/managebook': 'ManageBooks',
-    '/dashboard/managecategories': 'ManageCategories',
-    '/dashboard/returnbook': 'ReturnBooks',
-    '/dashboard/penaltymanagement': 'PenaltyManagement',
-    '/dashboard/setting': 'Settings',
-};
+  const current = items.find(([path]) => location.pathname === path)?.[1] || "Overview";
+  const logout = () => { localStorage.removeItem("Users"); toast.success("You have logged out."); navigate("/"); };
 
-// Determine the current breadcrumb
-const currentBreadcrumb = breadcrumbMap[location.pathname] || 'Home';
-  return (
-    <div className="h-[100vh]">
-      <div className="bg-gray-100 font-sans">
-        <div className="flex">
-          {/* Sidebar */}
-          <div
-            id="sidebar"
-            className="w-64 bg-white shadow-lg transition-width duration-300 ease-in-out h-[100vh]"
-          >
-            <div className="flex items-center justify-between p-4">
-              <Link to="/dashboard/index" className="text-blue-600 font-bold text-xl">
-                AdminHub
-              </Link>
-              <button
-                // onClick={toggleSidebar}
-                className="p-2 rounded-full hover:bg-gray-200"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4 6h16M4 12h8m-8 6h16"
-                  />
-                </svg>
-              </button>
-            </div>
-            <nav className="mt-6">
-              <ul>
-                <NavLink
-                  to="/dashboard/index"
-                  className={({ isActive }) =>
-                    `no-underline py-2 px-4 hover:bg-gray-100 flex items-center ${
-                      isActive ? "bg-gray-100 font-semibold" : ""
-                    }`
-                  }
-                >
-                  <span className="mr-3">🏠</span>
-                  <span className="truncate">Dashboard</span>
-                </NavLink>
-                <NavLink
-                  to="/dashboard/users"
-                  className={({ isActive }) =>
-                    `py-2 px-4 hover:bg-gray-100 flex items-center ${
-                      isActive ? "bg-gray-100 font-semibold" : ""
-                    }`
-                  }
-                >
-                  <span className="mr-3">👤</span>
-                  <span className="truncate">Users</span>
-                </NavLink>
-
-                <NavLink
-                  to="/dashboard/issuebook"
-                  className={({ isActive }) =>
-                    `py-2 px-4 hover:bg-gray-100 flex items-center ${
-                      isActive ? "bg-gray-100 font-semibold" : ""
-                    }`
-                  }
-                >
-                  <span className="mr-3">📚</span>
-                  <span className="truncate">Issue Books</span>
-                </NavLink>
-                <NavLink
-                  to="/dashboard/issuelibrarycard"
-                  className={({ isActive }) =>
-                    `py-2 px-4 hover:bg-gray-100 flex items-center ${
-                      isActive ? "bg-gray-100 font-semibold" : ""
-                    }`
-                  }
-                >
-                  <span className="mr-3">🏷️</span>
-                  <span className="truncate">Issue Library Card</span>
-                </NavLink>
-
-                <NavLink
-                  to="/dashboard/managebook"
-                  className={({ isActive }) =>
-                    `py-2 px-4 hover:bg-gray-100 flex items-center ${
-                      isActive ? "bg-gray-100 font-semibold" : ""
-                    }`
-                  }
-                >
-                  <span className="mr-3">📖</span>
-                  <span className="truncate">Manage Books</span>
-                </NavLink>
-
-                <NavLink
-                  to="/dashboard/managecategories"
-                  className={({ isActive }) =>
-                    `py-2 px-4 hover:bg-gray-100 flex items-center ${
-                      isActive ? "bg-gray-100 font-semibold" : ""
-                    }`
-                  }
-                >
-                  <span className="mr-3">🗂️</span>
-                  <span className="truncate">Manage Categories</span>
-                </NavLink>
-
-                <NavLink
-                  to="/dashboard/returnbook"
-                  className={({ isActive }) =>
-                    `py-2 px-4 hover:bg-gray-100 flex items-center ${
-                      isActive ? "bg-gray-100 font-semibold" : ""
-                    }`
-                  }
-                >
-                  <span className="mr-3">🔄</span>
-                  <span className="truncate">Return Books</span>
-                </NavLink>
-
-                <NavLink
-                  to="/dashboard/penaltymanagement"
-                  className={({ isActive }) =>
-                    `py-2 px-4 hover:bg-gray-100 flex items-center ${
-                      isActive ? "bg-gray-100 font-semibold" : ""
-                    }`
-                  }
-                >
-                  <span className="mr-3">💸</span>
-                  <span className="truncate">Penalty Management</span>
-                </NavLink>
-
-                <NavLink
-                  to="/dashboard/setting"
-                  className={({ isActive }) =>
-                    `py-2 px-4 hover:bg-gray-100 flex items-center ${
-                      isActive ? "bg-gray-100 font-semibold" : ""
-                    }`
-                  }
-                >
-                  <span className="mr-3">⚙️</span>
-                  <span className="truncate">Settings</span>
-                </NavLink>
-
-                <li className="py-2 px-4 hover:bg-gray-100 text-red-500 flex items-center">
-                  <span className="mr-3">🚪</span>
-
-                  <button className="logout truncate" onClick={handleLogout}>
-                    <span className="truncate">Logout</span>
-                  </button>
-                </li>
-              </ul>
-            </nav>
-          </div>
-          {/* Main Content */}
-          <div className="flex-1">
-            <header className="bg-white shadow py-[10px] px-4 flex items-center justify-between">
-              <h1 className="text-xl font-semibold">Dashboard <span className="font-bold text-[20px]">  &gt;</span> <span className="text-[18px]">{currentBreadcrumb}</span>  </h1>
-              <div className="flex items-center space-x-4">
-               
-                <div className="rounded-full w-10 h-10 bg-gray-200">
-                  <img
-                    src="https://via.placeholder.com/40"
-                    alt="User"
-                    className="w-full h-full rounded-full"
-                  />
-                </div>
-              </div>
-            </header>
-            <Outlet />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+  return <div className="min-h-screen bg-[#f5f1e8] text-[#20302a]"><aside className={`${collapsed ? "w-[76px]" : "w-64"} fixed inset-y-0 left-0 z-40 hidden border-r border-[#d9d3c7] bg-[#20302a] text-[#f5f1e8] transition-all lg:block`}><div className="flex h-full flex-col"><div className="flex items-center justify-between border-b border-white/10 p-5"><Link to="/dashboard/index" className="display-font text-xl">{collapsed ? "B" : "BookHub"}</Link><button className="border-0 bg-transparent text-[#c8d0c8]" onClick={() => setCollapsed(!collapsed)} aria-label="Collapse sidebar"><FiChevronLeft className={collapsed ? "rotate-180" : ""} /></button></div><div className="px-4 py-6"><p className={`eyebrow mb-3 text-[#efb27b] ${collapsed ? "hidden" : ""}`}>Library desk</p>{items.map(([path, label, EntryIcon]) => <NavLink key={path} to={path} className={({ isActive }) => `mb-1 flex items-center gap-3 px-3 py-3 text-sm no-underline ${isActive ? "bg-[#b36124] text-white" : "text-[#c8d0c8] hover:bg-white/10"}`}>{React.createElement(EntryIcon, { size: 17 })}<span className={collapsed ? "hidden" : ""}>{label}</span></NavLink>)}</div><div className="mt-auto p-4"><NavLink to="/dashboard/setting" className="mb-1 flex items-center gap-3 px-3 py-3 text-sm text-[#c8d0c8] no-underline hover:bg-white/10"><FiSettings size={17} /><span className={collapsed ? "hidden" : ""}>Settings</span></NavLink><button onClick={logout} className="flex w-full items-center gap-3 border-0 bg-transparent px-3 py-3 text-sm text-[#efb27b] hover:bg-white/10"><FiLogOut size={17} /><span className={collapsed ? "hidden" : ""}>Sign out</span></button></div></div></aside><div className={`${collapsed ? "lg:pl-[76px]" : "lg:pl-64"} min-h-screen transition-all`}><header className="sticky top-0 z-30 flex items-center justify-between border-b border-[#d9d3c7] bg-[#f5f1e8]/95 px-5 py-4 backdrop-blur lg:px-8"><div className="flex items-center gap-4"><button className="quiet-action lg:hidden" onClick={() => setMobileOpen(!mobileOpen)}><FiMenu /></button><div><p className="eyebrow">Staff console</p><h1 className="display-font text-2xl">{current}</h1></div></div><div className="mono-font text-xs text-[#8b938d]">{new Date().toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}</div></header>{mobileOpen && <div className="fixed inset-0 z-50 bg-[#20302a] p-6 text-[#f5f1e8] lg:hidden"><div className="flex justify-between"><span className="display-font text-xl">BookHub</span><button onClick={() => setMobileOpen(false)} className="border-0 bg-transparent text-2xl">×</button></div><nav className="mt-8">{items.map(([path, label, EntryIcon]) => <NavLink key={path} to={path} onClick={() => setMobileOpen(false)} className="mb-2 flex items-center gap-3 border-b border-white/10 py-4 no-underline">{React.createElement(EntryIcon)}{label}</NavLink>)}</nav></div>}<Outlet /></div></div>;
+}
 
 export default Dashboard;

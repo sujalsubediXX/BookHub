@@ -1,9 +1,27 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+
+:root {
+    font-family: "DM Sans", sans-serif;
+    color: #20302a;
+    background: #f5f1e8;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; background: #f5f1e8; }
+a { color: inherit; }
+button, input, select, textarea { font: inherit; }
+
 .login{
     background-image: url('./images/login_bg.png');
     background-size: cover;
 }
 .register{
-    background-image: url('./images/register_bg.jpeg');
+    background-image: url('/newregister.webp');
     background-size: cover;
 }
+
+.display-font { font-family: "Playfair Display", serif; }
+.mono-font { font-family: "DM Mono", monospace; }
