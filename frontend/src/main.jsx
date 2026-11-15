@@ -22,7 +22,7 @@ import ReturnBooks from "./Components/AdminPanel/ReturnBooks.jsx";
 import Setting from "./Components/AdminPanel/Setting.jsx";
 import Users from "./Components/AdminPanel/Users.jsx";
 
-import AuthProvider from "../../backend/context/AuthProvider.jsx";
+import AuthProvider from "./context/AuthProvider.jsx";
 import Front from "./Components/AdminPanel/Front.jsx";
 import IssuelibraryCard from "./Components/AdminPanel/IssuelibraryCard.jsx";
 import AddNewBook from "./Components/AdminPanel/AddNewBook.jsx";

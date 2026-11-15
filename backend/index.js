@@ -10,13 +10,17 @@ import { userInfo } from './controller/user.controller.js';
 import Genre from './modules/genre.module.js';
 import Book from './modules/book.module.js';
 import dbconnection from './database/db.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 3000;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 app.use(cors());
 app.use(express.json()); 
 app.use(bodyParser.json()); 
+app.use('/bookimgs', express.static(path.join(__dirname, '../frontend/public/bookimgs')));
 
 dbconnection().then(()=>{
 

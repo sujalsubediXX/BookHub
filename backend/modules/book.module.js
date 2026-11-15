@@ -37,7 +37,7 @@ const bookSchema = new Schema(
     availableCopies: {
       type: Number,
       required: true,
-      min: 1,
+      min: 0,
     },
     totalCopies: {
       type: Number,

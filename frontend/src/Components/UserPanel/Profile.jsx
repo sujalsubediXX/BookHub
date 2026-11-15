@@ -30,7 +30,7 @@ function Profile() {
           setEmail(user.email);
           setStatus(user.status);
           setImage(user.image);
-          setBorrowed(user.borrowedBooks);
+          setBorrowed(user.borrowedBooks || []);
           setUserId(user._id);
 
           const createddate = user.createdAt;
@@ -47,7 +47,7 @@ function Profile() {
 
       },1000);
     }
-  }, []);
+  }, [navigate]);
   const putComment=async ()=>{
     const response=await axios.post('http://localhost:3000/comment/setcomments',{userId:userId,username:username,comment:comments});
     if(response.status){
@@ -90,7 +90,7 @@ function Profile() {
               </ul>
             </div>
           </div>
-          <div className="w-full md:w-9/12 mx-2 h-64">
+          <div className="w-full md:w-9/12 mx-2">
             <div className="bg-white p-3 shadow-sm rounded-xl">
               <div className="flex items-center space-x-2 font-semibold text-gray-900 leading-8">
                 <span className="text-orange-500">
@@ -147,7 +147,7 @@ function Profile() {
                     <li key={index}>
                       <div className="text-teal-600">{book.title}</div>
                       <div className="text-gray-500 text-xs">
-                        Borrowed on: {book.borrowedOn}
+                        Borrowed on: {new Date(book.borrowedDate).toLocaleDateString()}
                       </div>
                     </li>
                     

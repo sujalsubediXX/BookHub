@@ -1,5 +1,6 @@
 import User from "../modules/users.module.js";
 import Borrow from "../modules/borrowBook.module.js";
+import Book from "../modules/book.module.js";
 import bcrypt from "bcrypt"
 
 
@@ -32,12 +33,15 @@ export const userInfo = async (req, res) => {
     }
 
     // Find the user in the database
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username }).select("-password").lean();
 
     // Check if user was found
     if (user) {
 
-      res.status(200).json(user);
+      const borrowedBooks = await Borrow.find({ userId: user.librarycardnumber })
+        .sort({ borrowedDate: -1 })
+        .lean();
+      res.status(200).json({ ...user, borrowedBooks });
     } else {
       res.status(404).json({ message: "User not found" });
     }
@@ -132,8 +136,20 @@ export const checkcard = async (req, res) => {
 export const issuebook =async(req,res)=>{
   try{
     const {  isbn,bookTitle,userId,userName,issueDate,returnDate,notes}=req.body;
+    const cardNumber = Number(userId);
+    const book = await Book.findOne({ isbn });
+    if (!book) {
+      return res.status(404).json({ message: "Book not found." });
+    }
+    if (book.availableCopies < 1) {
+      return res.status(409).json({ message: "No copies of this book are available." });
+    }
+    const card = await User.findOne({ librarycardnumber: cardNumber });
+    if (!card) {
+      return res.status(404).json({ message: "User with this library card was not found." });
+    }
     const issueBook=new Borrow({
-      userId:userId,
+      userId:cardNumber,
       name:userName,
       bookTitle:bookTitle,
       isbn:isbn,
@@ -142,6 +158,8 @@ export const issuebook =async(req,res)=>{
       Notes:notes,
     });
     await issueBook.save();
+    book.availableCopies -= 1;
+    await book.save();
     res.status(201).json({message:"Book issued successfully."})
   } catch (err) {
   console.error("Error in issuing book:", err.message);
