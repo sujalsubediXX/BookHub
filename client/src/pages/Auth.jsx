@@ -519,7 +519,12 @@ export default function Auth({ mode }) {
       const u = isLogin ? await login(form.email, form.password) : await register(form);
       navigate(dest(u), { replace: true });
     } catch (err) {
-      setError(errMsg(err));
+      if (!isLogin && err.response?.status === 409) {
+        setTab('login');
+        setError('This email is already registered. Log in instead.');
+      } else {
+        setError(errMsg(err));
+      }
       setBusy(false);
     }
   };
