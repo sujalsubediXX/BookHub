@@ -15,6 +15,7 @@ export default function Rentals() {
   const [res, setRes] = useState({ data: [], total: 0, pages: 1, page: 1 });
   const [rejecting, setRejecting] = useState(null);
   const [reason, setReason] = useState('');
+  const [returning, setReturning] = useState(null);
 
   const load = useCallback(() => {
     api.get('/rentals', { params: { view, userId, page, limit: 10 } }).then((r) => setRes(r.data)).catch((e) => toast(errMsg(e), 'err'));
@@ -26,13 +27,14 @@ export default function Rentals() {
     try { await api.patch(`/rentals/${id}/${path}`, body); toast(ok); load(); } catch (e) { toast(errMsg(e), 'err'); }
   };
   const doReject = async () => { await act(rejecting, 'reject', 'Request rejected', { reason }); setRejecting(null); setReason(''); };
+  const doReturn = async () => { await act(returning._id, 'return', 'Book returned'); setReturning(null); };
 
   const Actions = ({ r }) => (
     <>
       {r.status === 'requested' && <><button className="btn sm primary" onClick={() => act(r._id, 'approve', 'Approved. The copy is now held for the reader')}>Approve</button><button className="btn sm" onClick={() => setRejecting(r._id)}>Reject</button></>}
       {r.status === 'approved' && <><button className="btn sm primary" onClick={() => confirm(`Mark ${money(r.total)} as received in cash?`) && act(r._id, 'mark-paid', 'Marked as paid')}>Mark paid (cash)</button><button className="btn sm danger" onClick={() => confirm('Cancel and release the copy?') && act(r._id, 'cancel', 'Cancelled')}>Cancel</button></>}
       {r.status === 'ready' && <><button className="btn sm primary" onClick={() => act(r._id, 'handover', `Handed over. Due in ${r.days} days`)}>{r.fulfilment === 'delivery' ? 'Mark delivered' : 'Hand over'}</button><button className="btn sm danger" onClick={() => confirm('Cancel? The payment will be flagged for refund.') && act(r._id, 'cancel', 'Cancelled')}>Cancel</button></>}
-      {r.status === 'active' && <button className="btn sm primary" onClick={() => confirm(r.isOverdue ? `Overdue. Late fee ${money(r.currentLateFee)}. Mark returned?` : 'Mark as returned?') && act(r._id, 'return', 'Book returned')}>Mark returned</button>}
+      {r.status === 'active' && <button className="btn sm primary" onClick={() => setReturning(r)}>Mark returned</button>}
       {r.status === 'returned' && r.lateFee > 0 && !r.lateFeePaid && <button className="btn sm primary" onClick={() => act(r._id, 'collect-late-fee', 'Late fee collected')}>Collect {money(r.lateFee)}</button>}
       {r.payment?.status === 'refund_due' && <button className="btn sm" onClick={() => act(r._id, 'refunded', 'Marked as refunded')}>Mark refunded</button>}
     </>
@@ -73,6 +75,22 @@ export default function Rentals() {
         <Modal title="Reject request" onClose={() => setRejecting(null)}>
           <label>Reason shown to the reader<textarea rows="3" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="e.g. This copy is reserved for a class" /></label>
           <div className="form-actions"><button className="btn" onClick={() => setRejecting(null)}>Back</button><button className="btn primary" onClick={doReject}>Reject request</button></div>
+        </Modal>
+      )}
+
+      {returning && (
+        <Modal title="Complete book return" onClose={() => setReturning(null)}>
+          <div className="confirm-book">
+            <span className="confirm-book-cover">{returning.book && <Cover book={returning.book} />}</span>
+            <div><h3>{returning.book?.title}</h3><p>{returning.book?.author}</p><small>Borrowed by {returning.user?.name}</small></div>
+          </div>
+          <div className={`return-summary ${returning.isOverdue ? 'late' : ''}`}>
+            <div><span>Due date</span><strong>{fmtDate(returning.dueDate)}</strong></div>
+            <div><span>Condition</span><strong>{returning.isOverdue ? `Overdue by ${Math.abs(Math.ceil((new Date() - new Date(returning.dueDate)) / 86400000))} days` : 'Returned on time'}</strong></div>
+            {returning.isOverdue && <div><span>Late fee to collect</span><strong>{money(returning.currentLateFee)}</strong></div>}
+          </div>
+          <p className="muted">This will return the copy to available inventory and close the reader's active rental.</p>
+          <div className="form-actions"><button className="btn" onClick={() => setReturning(null)}>Keep open</button><button className="btn primary" onClick={doReturn}>Confirm return</button></div>
         </Modal>
       )}
     </>

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api, { errMsg } from '../api.js';
+import { useAuth } from '../context/AuthContext.jsx';
 import { Cover, Empty, Modal, StatusBadge, fmtDate, money, useToast } from '../components/ui.jsx';
 
 const STEPS = ['Requested', 'Approved', 'Paid', 'Collected', 'Returned'];
@@ -99,6 +100,7 @@ function RentalCard({ r, reload }) {
 }
 
 export default function MyRentals() {
+  const { wishlist } = useAuth();
   const toast = useToast();
   const [tab, setTab] = useState('current');
   const [rentals, setRentals] = useState(null);
@@ -113,7 +115,20 @@ export default function MyRentals() {
 
   return (
     <>
-      <h1 className="page-title">My rentals</h1>
+      <section className="reader-hero">
+        <div>
+          <p className="eyebrow">Your reading room</p>
+          <h1>My rentals</h1>
+          <p>Everything you are reading, waiting for, or ready to return.</p>
+        </div>
+        <div className="reader-actions"><Link to="/books" className="btn primary">Find your next book</Link><Link to="/wishlist" className="btn">Saved books {wishlist.length > 0 && `(${wishlist.length})`}</Link></div>
+      </section>
+      <section className="reading-pulse" aria-label="Reading summary">
+        <div><b>{current.length}</b><span>open rentals</span></div>
+        <div className={dueSoon.some((r) => r.isOverdue) ? 'alert-stat' : ''}><b>{dueSoon.filter((r) => r.isOverdue).length}</b><span>need attention</span></div>
+        <div><b>{history.length}</b><span>in your history</span></div>
+        <div><b>{wishlist.length}</b><span>saved for later</span></div>
+      </section>
       {dueSoon.some((r) => r.isOverdue) && <div className="alert">You have an overdue book. Please return it to avoid more late fees and to rent again.</div>}
       <div className="segmented wide-seg">
         <button className={tab === 'current' ? 'on' : ''} onClick={() => setTab('current')}>Current ({current.length})</button>

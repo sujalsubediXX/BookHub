@@ -117,6 +117,7 @@ const PATHS = {
   clipboard: 'M9 4h6v3H9zM7 5H5v16h14V5h-2M9 12h6M9 16h4',
   chart: 'M4 20V10M10 20V4M16 20v-7M22 20H2',
   tag: 'M3 12V3h9l9 9-9 9zM7.5 7.5h.01',
+  refresh: 'M20 11a8 8 0 00-14.9-3M4 5v4h4M4 13a8 8 0 0014.9 3M20 19v-4h-4',
 };
 export const Icon = ({ name, size = 18 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

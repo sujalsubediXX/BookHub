@@ -21,11 +21,12 @@ export const listBooks = asyncHandler(async (req, res) => {
     filter.$or = [{ title: rx }, { author: rx }, { isbn: rx }, { publisher: rx }];
   }
   if (genre) {
-    if (mongoose.isValidObjectId(genre)) filter.genre = genre;
-    else {
+    let genreId = genre;
+    if (!mongoose.isValidObjectId(genre)) {
       const matchingGenre = await Genre.findOne({ name: new RegExp(`^${escapeRegex(genre)}$`, 'i') }).select('_id').lean();
-      filter.genre = matchingGenre?._id || { $in: [] };
+      genreId = matchingGenre?._id?.toString();
     }
+    filter.$expr = { $in: [genreId || null, { $map: { input: '$genre', as: 'genreId', in: { $toString: '$$genreId' } } }] };
   }
   if (language) filter.language = language;
   if (minRating) filter.avgRating = { $gte: Number(minRating) };
