@@ -76,7 +76,7 @@ export default function Dashboard() {
       <section className="dashboard-hero">
         <div>
           <p className="eyebrow">
-            {isAdmin ? "Library command centre" : "Today at Pustakalaya"}
+            {isAdmin ? "Library command centre" : "Today at BookHub"}
           </p>
           <h1>Hello, {user.name.split(" ")[0]}</h1>
           <p>

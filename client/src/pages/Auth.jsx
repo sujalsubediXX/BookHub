@@ -535,7 +535,7 @@ export default function Auth({ mode }) {
       <canvas id="dustCanvas" />
 
       <Link to="/" className="la-back" aria-label="Back to the shop">
-        <span className="la-back-mark">पु</span>
+        <span className="la-back-mark">BH</span>
         <span className="la-back-text">Back to the shop</span>
       </Link>
 

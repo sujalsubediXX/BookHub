@@ -261,6 +261,12 @@ label.check input {
   height: 56px;
   font-size: 1.9rem;
 }
+.brand-logo {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  flex: 0 0 38px;
+}
 .sidebar nav {
   display: grid;
   gap: 2px;

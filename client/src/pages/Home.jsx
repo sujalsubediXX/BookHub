@@ -44,7 +44,7 @@ export default function Home() {
       {/* ---------- hero ---------- */}
       <section className="hero">
         <div className="hero-copy">
-          <p className="eyebrow">Pustakalaya · online reading room</p>
+          <p className="eyebrow">BookHub · online reading room</p>
           <h1 className="display">Rent a book.<br />Read it. Return it.</h1>
           <p className="lead-text">Browse the shelves from home, ask for a book for as many days as you need, and collect it from the library or have it delivered.</p>
           <form onSubmit={(e) => { e.preventDefault(); navigate(`/books?q=${encodeURIComponent(q)}`); }} className="hero-search" role="search">

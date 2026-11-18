@@ -34,8 +34,8 @@ export default function AdminLayout() {
     <div className="shell">
       <aside className={`sidebar ${open ? 'open' : ''}`}>
         <div className="brand">
-          <span className="brand-mark">पु</span>
-          <div><strong>Pustakalaya</strong><small>Admin panel</small></div>
+          <span className="brand-mark">BH</span>
+          <div><strong>BookHub</strong><small>Admin panel</small></div>
         </div>
         <nav onClick={() => setOpen(false)}>
           {nav.map((n) => (

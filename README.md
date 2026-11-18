@@ -1,4 +1,4 @@
-# Pustakalaya: online book rental
+# BookHub: online book rental
 
 A library storefront where readers browse books online, request them for a number of days, pay with eSewa, Khalti or cash, and track due dates. The library admin runs everything from an admin panel.
 

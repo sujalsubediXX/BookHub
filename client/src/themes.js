@@ -19,6 +19,12 @@ export const THEMES = [
   T('solar-light', 'Solarized Light', 'light', ['#fdf6e3', '#fffcf2', '#eee8d5', '#073642', '#657b83', '#ddd6c1', '#268bd2', '#ffffff', '#cb4b16']),
   T('coral-reef', 'Coral Reef', 'light', ['#fff1ee', '#ffffff', '#ffe0d9', '#3b1c19', '#8f625c', '#f5cdc5', '#d6453d', '#ffffff', '#0f8b8d']),
   T('sage', 'Sage', 'light', ['#f0f3ec', '#fbfcf9', '#e1e8d8', '#232c1d', '#66745a', '#ccd7bf', '#56733a', '#ffffff', '#b0703c']),
+  T('linen', 'Linen', 'light', ['#f5f0e8', '#fffdf9', '#e9dfd1', '#302922', '#75695d', '#d8cbbd', '#795548', '#ffffff', '#b8894a']),
+  T('meadow', 'Meadow', 'light', ['#eef5e8', '#fbfdf8', '#dcebd1', '#1d3020', '#61745f', '#c5d9bb', '#3f7d45', '#ffffff', '#c47b39']),
+  T('terracotta', 'Terracotta', 'light', ['#fff0e8', '#fffaf6', '#f4ddd0', '#38231c', '#84675b', '#e6c6b5', '#b65337', '#ffffff', '#31706c']),
+  T('harbor', 'Harbor', 'light', ['#edf5f5', '#ffffff', '#d9e9e9', '#173235', '#5a7778', '#c2dada', '#267d83', '#ffffff', '#d08b3e']),
+  T('lemonade', 'Lemonade', 'light', ['#fffbea', '#fffef7', '#f5efc9', '#343018', '#81794e', '#e4dca6', '#827500', '#ffffff', '#d25b35']),
+  T('rosewood', 'Rosewood', 'light', ['#faf0ee', '#fffafa', '#f0dedd', '#351f22', '#836366', '#e2c6c6', '#934052', '#ffffff', '#5d6e9d']),
   // ---- dark ----
   T('midnight', 'Midnight', 'dark', ['#0e1320', '#161d2f', '#1e2740', '#e6ebf7', '#8b97b8', '#2a3555', '#6c8cff', '#0b1020', '#ffb454']),
   T('nord', 'Nord', 'dark', ['#2e3440', '#3b4252', '#434c5e', '#eceff4', '#a3adc2', '#4c566a', '#88c0d0', '#1f2430', '#ebcb8b']),
@@ -33,6 +39,12 @@ export const THEMES = [
   T('aurora', 'Aurora', 'dark', ['#0b1220', '#121c30', '#1a2844', '#e8f1ff', '#8aa0c6', '#26395f', '#5eead4', '#04231f', '#c084fc']),
   T('matrix', 'Matrix', 'dark', ['#020a04', '#07140a', '#0c2112', '#b6ffc8', '#5fb578', '#12381e', '#00ff6a', '#012108', '#d4ff00']),
   T('ember', 'Ember', 'dark', ['#1a0f0c', '#26150f', '#351d14', '#ffe9dd', '#c09580', '#4d2a1c', '#ff7a3d', '#200a00', '#ffc857']),
+  T('obsidian', 'Obsidian', 'dark', ['#101114', '#191b20', '#24272e', '#f0f2f5', '#9ca4b2', '#363b45', '#9aa7ff', '#11131a', '#f08c46']),
+  T('deep-plum', 'Deep Plum', 'dark', ['#1b111c', '#271827', '#382238', '#f8eefa', '#b99ab8', '#513451', '#d976b8', '#210d20', '#8dd9c0']),
+  T('volcanic', 'Volcanic', 'dark', ['#171313', '#241b1b', '#342424', '#f8eeee', '#b99b9b', '#4d3535', '#e85d5d', '#250c0c', '#f2c14e']),
+  T('arctic-night', 'Arctic Night', 'dark', ['#0d1820', '#14242d', '#1d3340', '#eaf7fb', '#8daeb9', '#2d4d5b', '#65c7d9', '#092027', '#f2b66d']),
+  T('olive-grove', 'Olive Grove', 'dark', ['#151a12', '#20281a', '#2d3822', '#edf4df', '#a2ad8d', '#435336', '#a4c639', '#172006', '#e0a458']),
+  T('terminal', 'Terminal', 'dark', ['#07100b', '#0d1b12', '#14271a', '#d8ffe1', '#75ad83', '#23452d', '#39d353', '#061408', '#f0e68c']),
 ];
 
 export const DEFAULT_THEME = 'reading-room';

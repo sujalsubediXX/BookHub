@@ -8,8 +8,11 @@ const PORT = process.env.PORT || 5000;
 connectDB()
   .then(() => {
     startJobs();
-    app.listen(PORT);
+    app.listen(PORT, () => {
+      console.log(`API listening on port ${PORT}`);
+    });
   })
   .catch((err) => {
+    console.error(`Server startup failed: ${err.message}`);
     process.exit(1);
   });

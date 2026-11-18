@@ -30,8 +30,8 @@ export default function StoreLayout() {
     <div className="store">
       <header className="store-head">
         <Link to="/" className="brand">
-          <span className="brand-mark">पु</span>
-          <strong>Pustakalaya</strong>
+          <img className="brand-logo" src="/logo.png" alt="BookHub" />
+          <strong>BookHub</strong>
         </Link>
         <button className="icon-btn menu-toggle" onClick={() => setMenu(!menu)} aria-label="Menu" aria-expanded={menu}><Icon name="menu" /></button>
         <div className={`head-body ${menu ? 'open' : ''}`}>
@@ -69,7 +69,7 @@ export default function StoreLayout() {
       <footer className="site-foot">
         <div className="foot-grid">
           <div>
-            <Link to="/" className="brand"><span className="brand-mark">पु</span><strong>Pustakalaya</strong></Link>
+            <Link to="/" className="brand"><span className="brand-mark">BH</span><strong>BookHub</strong></Link>
             <p>An online reading room. Rent a book for a few days, pay online, and return it when you are done.</p>
           </div>
           <div>
@@ -81,7 +81,7 @@ export default function StoreLayout() {
             {user ? <>{isCustomer && <><Link to="/my-rentals">My rentals</Link><Link to="/wishlist">Wishlist</Link></>}<Link to="/profile">Profile</Link></> : <><Link to="/login">Log in</Link><Link to="/register">Create an account</Link></>}
           </div>
         </div>
-        <div className="foot-base mono">© {new Date().getFullYear()} Pustakalaya</div>
+        <div className="foot-base mono">© {new Date().getFullYear()} BookHub</div>
       </footer>
       {picker && <ThemePicker onClose={() => setPicker(false)} />}
     </div>
