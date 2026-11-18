@@ -37,10 +37,15 @@ export const listBooks = asyncHandler(async (req, res) => {
   }
   if (available === 'true') filter.availableCopies = { $gt: 0 };
 
-  const [data, total] = await Promise.all([
-    Book.find(filter).sort(SORTS[sort] || SORTS.newest).skip(p.skip).limit(p.limit).populate('genre', 'name'),
-    Book.countDocuments(filter),
-  ]);
+  const total = await Book.countDocuments(filter);
+  const randomSkip = sort === 'random'
+    ? Math.floor(Math.random() * Math.max(total - p.limit + 1, 1))
+    : p.skip;
+  const data = await Book.find(filter)
+    .sort(SORTS[sort] || SORTS.newest)
+    .skip(randomSkip)
+    .limit(p.limit)
+    .populate('genre', 'name');
   res.json(pageOf(data, total, p));
 });
 

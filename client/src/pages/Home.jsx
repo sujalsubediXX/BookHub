@@ -27,7 +27,7 @@ export default function Home() {
   useEffect(() => {
     api.get('/genres').then((r) => setGenres(r.data.data));
     api.get('/books/facets').then((r) => setFacets(r.data));
-    api.get('/books', { params: { sort: 'newest', limit: 3 } }).then((r) => setFeatured(r.data.data));
+    api.get('/books', { params: { sort: 'random', limit: 3 } }).then((r) => setFeatured(r.data.data));
     api.get('/books', { params: { sort: 'rating', minRating: 1, limit: 4 } }).then((r) => setTop(r.data.data));
   }, []);
 
